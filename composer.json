@@ -1,0 +1,36 @@
+{
+    "name": "tech/api-helper",
+    "description": "API helper",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "myothantkyaw",
+            "email": "myothantkyaw.dev@gmail.com"
+        }
+    ],
+    "require": {
+        "ext-json": "*",
+        "tymon/jwt-auth": "1.0.*",
+        "barryvdh/laravel-cors": "*"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tech\\APIHelper\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tech\\APIHelper\\Test\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": [
+            "Tech\\APIHelper\\ApiHelperServiceProvider"
+        ]
+    },
+    "minimum-stability": "dev"
+}

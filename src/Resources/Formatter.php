@@ -97,7 +97,7 @@ class Formatter
         $response = $this->defaultFormat();
 
         if (!empty($meta = $this->meta)) :
-            array_push($response, $meta);
+            $response["meta"] = $meta;
         endif;
 
         $response["data"] = $data;
@@ -201,7 +201,7 @@ class Formatter
     /**
      * @param $exception
      * @param $code
-     * @return \Illuminate\Http\JsonResponse
+     * @return array
      */
     public function makeErrorException($exception, $code)
     {

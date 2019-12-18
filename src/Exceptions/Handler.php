@@ -48,21 +48,24 @@ class Handler extends ExceptionHandler
         "Tech\APIHelper\Exceptions\ValidationException",
         "Tech\APIHelper\Exceptions\FatalErrorException",
         "Tech\APIHelper\Exceptions\TokenInvalidException",
+        "Tech\APIHelper\Exceptions\NotFoundHttpException",
         "Tech\APIHelper\Exceptions\UnauthorizedException",
         "Tech\APIHelper\Exceptions\BadMethodCallException",
         "Tech\APIHelper\Exceptions\DeleteResourceNotFound",
         "Tech\APIHelper\Exceptions\UpdateResourceNotFound",
-        "Tech\APIHelper\Exceptions\NotFoundHttpException",
         "Tech\APIHelper\Exceptions\MethodNotAllowedHttpException",
     ];
 
     /**
      * Render an exception into an HTTP response.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param $request
+     * @throws DataBaseException
      * @param Exception $exception
-     * @return \Illuminate\Http\JsonResponse $reponse
-     * @throws NotFoundRouteException
+     * @throws \Tech\APIHelper\Exceptions\FatalErrorException
+     * @throws \Tech\APIHelper\Exceptions\NotFoundHttpException
+     * @throws \Tech\APIHelper\Exceptions\MethodNotAllowedHttpException
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $exception)
     {
@@ -73,15 +76,19 @@ class Handler extends ExceptionHandler
                 throw new \Tech\APIHelper\Exceptions\MethodNotAllowedHttpException();
             elseif ($exception instanceof QueryException) :
                 throw new DataBaseException($exception->getMessage());
+            elseif ($exception instanceof FatalThrowableError) :
+                throw new FatalErrorException($exception->getMessage());
             endif;
             return $this->handel($request, $exception);
         endif;
+
+        return parent::render($request, $exception);
     }
 
     /**
      * @param $request
      * @param $exception
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response
+     * @return mixed
      */
     private function handel($request, $exception)
     {
@@ -98,7 +105,7 @@ class Handler extends ExceptionHandler
     /**
      * @param $exception
      * @param $code
-     * @return \Illuminate\Http\JsonResponse
+     * @return array
      */
     private function make($exception, $code)
     {

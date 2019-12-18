@@ -9,8 +9,8 @@
 namespace Tech\APIHelper\Services;
 
 use Illuminate\Support\Facades\Config;
-use Dotenv\Exception\ValidationException;
 use Illuminate\Support\Facades\Validator;
+use Tech\APIHelper\Exceptions\ValidationException;
 
 class CommonService
 {
@@ -41,6 +41,7 @@ class CommonService
 
     /**
      * @param $id
+     * @throws ValidationException
      */
     public function id($id)
     {
@@ -49,7 +50,7 @@ class CommonService
         ]);
 
         if ($validator->fails()) :
-            throw new ValidationException($validator->errors()->messages());
+            throw new ValidationException($validator->errors());
         endif;
     }
 }

@@ -36,6 +36,9 @@ abstract class BaseService extends CommonService
      */
     protected $repository;
 
+    /**
+     * @var array
+     */
     protected $allowable = [
         "limit", "offset", "from", "to", "deleted"
     ];
@@ -73,10 +76,13 @@ abstract class BaseService extends CommonService
      * @return array
      * @throws FatalErrorException
      */
-    public function getAll($params, $withResource = null)
+    public function getAll($params = null, $withResource = null)
     {
         try {
-            $input = $params->only($this->allowable);
+            $input = null;
+            if (!empty($params)) :
+                $input = $params->only($this->allowable);
+            endif;
             $count = $this->repository->count();
             $data = $this->repository->getData($input, $withResource);
             $this->setMetaResponse(count($data), $count, $params);
@@ -148,15 +154,37 @@ abstract class BaseService extends CommonService
     {
         $this->id($id);
 
-        if (!$this->$this->repository->isExist($id)) :
+        if (!$this->repository->isExist($id)) :
             throw new DeleteResourceNotFound();
         endif;
 
         try {
             $this->repository->deleteData($id);
             return $this->response->make([
-                "message" => "The $id was successfully deleted."
+                "message" => "The ID:$id was successfully deleted."
             ]);
+        } catch (\Exception $exception) {
+            throw new FatalErrorException($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     * @throws FatalErrorException
+     * @throws NotFoundException
+     * @throws \Tech\APIHelper\Exceptions\ValidationException
+     */
+    public function restore($id)
+    {
+        $this->id($id);
+
+        if (!$this->repository->isExist($id, 1)) :
+            throw new NotFoundException();
+        endif;
+
+        try {
+            return $this->response->make($this->repository->restore($id));
         } catch (\Exception $exception) {
             throw new FatalErrorException($exception->getMessage());
         }

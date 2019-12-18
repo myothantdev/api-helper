@@ -50,11 +50,10 @@ class BaseRepository implements RepositoryInterface
     {
         $query = $this->getQuery($params);
         if (!empty($withResource)) :
-            $query->with($withResource);
+            $query = $query->with($withResource);
         endif;
-        $data = $query->get();
 
-        return !empty($data) ? $data->toArray() : [];
+        return $query->get()->toArray();
     }
 
     /**
@@ -66,7 +65,7 @@ class BaseRepository implements RepositoryInterface
     {
         $query = $this->getQuery(["id" => $id]);
         if (!empty($withResource)) :
-            $query->with($withResource);
+            $query = $query->with($withResource);
         endif;
         return $query->first();
     }
@@ -100,10 +99,10 @@ class BaseRepository implements RepositoryInterface
         try {
             DB::beginTransaction();
             $result = $this->model->where("id", "=", $id)->update($params);
-            if (!empty($result)) :
-                return $this->getDataById($id)->toArray();
-            endif;
             DB::commit();
+            if (!empty($result)) :
+                return $this->getDataById($id, null)->toArray();
+            endif;
         } catch (\Exception $exception) {
             DB::rollBack();
             throw new DataBaseException($exception->getMessage());
@@ -130,9 +129,22 @@ class BaseRepository implements RepositoryInterface
      * @param $id
      * @return mixed
      */
-    public function isExist($id)
+    public function isExist($id, $trash = null)
     {
-       return $this->model->where("id", "=", $id)->exists();
+        $query = $this->model->where("id", "=", $id);
+        if (!empty($trash)) :
+            $query = $query->withTrashed();
+        endif;
+        return $query->exists();
+    }
+
+    public function restore($id)
+    {
+        $result = $this->model->where("id", "=", $id)->restore($id);
+        if (!empty($result)) :
+            return $this->getDataById($id, null)->toArray();
+        endif;
+        return $result;
     }
 
     /**
@@ -164,7 +176,7 @@ class BaseRepository implements RepositoryInterface
         endif;
 
         if (!empty($params["deleted"])) :
-            $query = $query->whereNotNull("deleted_at");
+            $query = $query->whereNotNull("deleted_at")->withTrashed();
         endif;
 
         return $query;

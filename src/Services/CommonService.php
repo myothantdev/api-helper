@@ -8,7 +8,6 @@
 
 namespace Tech\APIHelper\Services;
 
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use Tech\APIHelper\Exceptions\ValidationException;
 

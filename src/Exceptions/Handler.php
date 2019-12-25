@@ -43,6 +43,7 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $handels = [
+        "BadMethodCallException",
         "Tech\APIHelper\Exceptions\DataBaseException",
         "Tech\APIHelper\Exceptions\NotFoundException",
         "Tech\APIHelper\Exceptions\ValidationException",

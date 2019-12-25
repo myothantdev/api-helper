@@ -26,6 +26,7 @@ class BaseRepository implements RepositoryInterface
 
     /**
      * BaseRepository constructor.
+     *
      * @param Model $model
      */
     public function __construct(Model $model)
@@ -44,11 +45,12 @@ class BaseRepository implements RepositoryInterface
     /**
      * @param $params
      * @param $withResource
-     * @return array
+     * @param $attributes
+     * @return mixed
      */
-    public function getData($params, $withResource)
+    public function getData($params, $withResource, $attributes)
     {
-        $query = $this->getQuery($params);
+        $query = $this->getQuery($params, $attributes);
         if (!empty($withResource)) :
             $query = $query->with($withResource);
         endif;
@@ -150,8 +152,9 @@ class BaseRepository implements RepositoryInterface
     /**
      * @param $params
      * @return Model
+     * @param array $attributes
      */
-    public function getQuery($params)
+    public function getQuery($params, $attributes = [])
     {
         $query = $this->model;
 
@@ -179,6 +182,30 @@ class BaseRepository implements RepositoryInterface
             $query = $query->whereNotNull("deleted_at")->withTrashed();
         endif;
 
+        if (!empty($attributes)) :
+            $query = $this->getCustomQuery($query, $attributes);
+        endif;
+
+        return $query;
+    }
+
+    /**
+     * @param $query
+     * @return mixed
+     * @param $attributes
+     */
+    protected function getCustomQuery($query , $attributes)
+    {
+        $operator = "=";
+        foreach ($attributes as $key => $attribute) :
+            if (!empty($attribute)) :
+                $raw = explode(":", $key);
+                if (count($raw) > 1) :
+                    $operator = end($raw);
+                endif;
+                $query = $query->where(array_first($raw), $operator, $attribute);
+            endif;
+        endforeach;
         return $query;
     }
 }

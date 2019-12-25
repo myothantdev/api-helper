@@ -17,9 +17,10 @@ interface RepositoryInterface
     /**
      * @param $params
      * @param $withResource
+     * @param $attributes
      * @return mixed
      */
-    public function getData($params, $withResource);
+    public function getData($params, $withResource, $attributes);
 
     /**
      * @param $id

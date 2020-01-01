@@ -190,10 +190,5 @@ abstract class BaseService extends CommonService
         }
     }
 
-    protected function getCustom($data)
-    {
-        dd($data);
-    }
-
     public function __clone(){}
 }

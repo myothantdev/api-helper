@@ -16,13 +16,17 @@ class JWTAuthenticate extends BaseMiddleware
      * Handle an incoming request.
      *
      * @param $request
-     * @param Closure $next
+     * @param Closure  $next
+     * @param $guard
      * @return mixed
      * @throws UnauthorizedException
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $guard = null)
     {
         try {
+            if (!empty($guard)) :
+                auth()->shouldUse($guard);
+            endif;
             $this->authenticate($request);
         } catch (\Exception $exception) {
             throw new UnauthorizedException($exception->getMessage());

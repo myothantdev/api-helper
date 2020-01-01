@@ -14,6 +14,7 @@ use Illuminate\Database\QueryException;
 use Tech\APIHelper\Resources\Formatter;
 use Tech\APIHelper\Exceptions\FatalErrorException;
 use Symfony\Component\ErrorHandler\Error\FatalError;
+use Spatie\Permission\Exceptions\UnauthorizedException;
 use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -60,13 +61,14 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param $request
-     * @throws DataBaseException
+     * @param \Illuminate\Http\Request $request
      * @param Exception $exception
+     * @throws DataBaseException
      * @throws \Tech\APIHelper\Exceptions\FatalErrorException
      * @throws \Tech\APIHelper\Exceptions\NotFoundHttpException
+     * @throws \Tech\APIHelper\Exceptions\UnauthorizedException
      * @throws \Tech\APIHelper\Exceptions\MethodNotAllowedHttpException
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response
+     * @return \Illuminate\Http\Response|mixed|\Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $exception)
     {
@@ -79,6 +81,8 @@ class Handler extends ExceptionHandler
                 throw new DataBaseException($exception->getMessage());
             elseif ($exception instanceof FatalThrowableError) :
                 throw new FatalErrorException($exception->getMessage());
+            elseif ($exception instanceof UnauthorizedException) :
+                throw new \Tech\APIHelper\Exceptions\UnauthorizedException($exception->getMessage());
             endif;
             return $this->handel($request, $exception);
         endif;

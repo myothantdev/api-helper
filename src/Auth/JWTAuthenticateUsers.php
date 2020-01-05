@@ -28,7 +28,8 @@ trait JWTAuthenticateUsers
         $this->validateLogin($request->all());
 
         if ($token = $this->authenticate($request)) :
-            return $this->response()->authResponse($token);
+            return $this->response()->setStatus(200)
+                ->authResponse($token);
         endif;
 
         throw new UnauthorizedException();

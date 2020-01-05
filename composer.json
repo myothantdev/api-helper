@@ -12,7 +12,7 @@
     "require": {
         "ext-json": "*",
         "tymon/jwt-auth": "1.0.*",
-        "barryvdh/laravel-cors": "*"
+        "barryvdh/laravel-cors": "^0.11"
     },
     "require-dev": {
         "orchestra/testbench": "^3.8"

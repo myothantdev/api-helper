@@ -47,10 +47,10 @@ class Manifest
             "TokenInvalidException" => "The requested token is invalid",
             "NotFoundHttpException" => "The requested route does not exist.",
             "NotFoundException" => "The requested resource ID does not exist.",
-            "UnauthorizedException" => "The requested parameter is unauthorized",
             "DeleteResourceNotFound" => "The deleted resource ID does not exits.",
             "UpdateResourceNotFound" => "The updated resource ID does not exist.",
             "FatalErrorException" => "Internal server error, Please try again later.",
+            "UnauthorizedException" => "The requested password or phone no is incorrect",
             "MethodNotAllowedHttpException" => "The requested method is not supported for this route."
         ];
     }

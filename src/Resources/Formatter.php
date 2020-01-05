@@ -20,7 +20,7 @@ class Formatter
 {
     /**
      * This variable is used to set data count
-     * 
+     *
      * @var
      */
     protected $count;
@@ -223,6 +223,17 @@ class Formatter
         endif;
 
         return $response;
+    }
+
+    /**
+     * @param int $status
+     * @return $this
+     */
+    public function setStatus(int $status)
+    {
+        $this->status = $status;
+
+        return $this;
     }
 
     protected function __clone(){}

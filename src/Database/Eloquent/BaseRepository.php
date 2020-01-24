@@ -37,9 +37,15 @@ class BaseRepository implements RepositoryInterface
     /**
      * @return mixed
      */
-    public function count()
+    public function count($count)
     {
-        return $this->model->count();
+        $query = $this->model;
+
+        if (!empty($count)) :
+            $query = $this->getCustomQuery($query, $count);
+        endif;
+
+        return $query->count();
     }
 
     /**
@@ -140,6 +146,26 @@ class BaseRepository implements RepositoryInterface
         return $query->exists();
     }
 
+    /**
+     * @param $attribute
+     * @param $operator
+     * @param $value
+     * @return bool
+     */
+    public function checkWithAttribute($attributes, $operator)
+    {
+        $query = $this->model;
+        foreach ($attributes as $key => $attribute) :
+            $query = $query->where($key, $operator, $attribute);
+        endforeach;
+
+        if ($status = $query->exists()) :
+            return $query->first();
+        else :
+            return false;
+        endif;
+    }
+
     public function restore($id)
     {
         $result = $this->model->where("id", "=", $id)->restore($id);
@@ -182,7 +208,7 @@ class BaseRepository implements RepositoryInterface
             $query = $query->whereNotNull("deleted_at")->withTrashed();
         endif;
 
-        if (!empty($attributes)) :
+        if (!is_null($attributes)) :
             $query = $this->getCustomQuery($query, $attributes);
         endif;
 
@@ -198,7 +224,7 @@ class BaseRepository implements RepositoryInterface
     {
         $operator = "=";
         foreach ($attributes as $key => $attribute) :
-            if (!empty($attribute)) :
+            if (!is_null($attribute)) :
                 $raw = explode(":", $key);
                 if (count($raw) > 1) :
                     $operator = end($raw);

@@ -76,14 +76,14 @@ abstract class BaseService extends CommonService
      * @return array
      * @throws FatalErrorException
      */
-    public function getAll($params = null, $withResource = null, array $attributes = [])
+    public function getAll($params = null, $withResource = null, array $attributes = [], array $custom_count = [])
     {
         try {
             $input = null;
             if (!empty($params)) :
                 $input = $params->only($this->allowable);
             endif;
-            $count = $this->repository->count();
+            $count = $this->repository->count($custom_count);
             $data = $this->repository->getData($input, $withResource, $attributes);
             $this->setMetaResponse(count($data), $count, $params);
             return $this->response->make($data);
@@ -188,6 +188,19 @@ abstract class BaseService extends CommonService
         } catch (\Exception $exception) {
             throw new FatalErrorException($exception->getMessage());
         }
+    }
+
+    /**
+     * @param $attribute
+     * @param null $operator
+     * @param null $value
+     * @return bool|mixed
+     */
+    public function checkWithAttribute(array $attributes, $operator = null)
+    {
+        $operator = !is_null($operator) ? $operator : "=";
+        $response = $this->repository->checkWithAttribute($attributes, $operator);
+        return $response ? $response : false;
     }
 
     public function __clone(){}

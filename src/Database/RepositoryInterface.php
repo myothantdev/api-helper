@@ -51,5 +51,5 @@ interface RepositoryInterface
     /**
      * @return mixed
      */
-    public function count();
+    public function count($attributes);
 }
